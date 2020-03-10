@@ -1,4 +1,0 @@
--r common.txt
--r biowl.txt
-psycopg2
-gunicorn

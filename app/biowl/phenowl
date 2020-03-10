@@ -1,9 +1,0 @@
-server {
-    listen 8080;
-    server_name sr-p2irc-big7.usask.ca;
-
-    location / {
-        include uwsgi_params;
-        uwsgi_pass unix:/home/phenodoop/phenowl/phenowl.sock;
-    }
-}

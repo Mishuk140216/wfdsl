@@ -1,9 +1,0 @@
-{
-    "functions": [
-        {
-            "name": "MyService",
-            "example": "data = MyService(data)",
-			"returns": "file"
-        }
-    ]
-}
