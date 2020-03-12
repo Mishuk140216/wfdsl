@@ -1,7 +1,7 @@
 import logging
 import threading
 import _thread
-from context import Context
+from dsl.context import Context
 
 
 class CodeGenerator(object):

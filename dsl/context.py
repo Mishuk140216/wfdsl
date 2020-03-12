@@ -1,7 +1,7 @@
 import threading
 
-from func_resolver import LibraryBase
-from externalInfo import FileSystem
+from dsl.func_resolver import LibraryBase
+from dsl.util import FileSystem
 
 
 class SymbolTable():
@@ -149,12 +149,12 @@ class Context:
     '''
     The context for parsing and interpretation.
     '''
-    def __init__(self, tempdirs = {}):
+    def __init__(self, library, tempdirs = {}):
         '''
         Initializes this object.
         :param tempdirs: {datasource_type: tempdir}
         '''
-        self.library = LibraryBase()
+        self.library = library
         self.runnable = None
         self.user_id = None
         self.tempdirs = tempdirs
@@ -267,7 +267,7 @@ class Context:
     @property
     def library(self):
         return self.__library
-    
+         
     @library.setter
     def library(self, lib):
         self.__library = lib

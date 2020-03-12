@@ -4,8 +4,8 @@ from os import path, getcwd
 import os
 import pathlib
 
-from externalInfo import FileSystem, exechelper
-from fileop import FilterManager, FolderItem
+from dsl.util import FileSystem, exechelper
+from dsl.fileop import FilterManager, FolderItem
 
 # import_module can't load the following modules in the NGINX server
 # while running in 'immediate' mode. The early imports here are needed.
@@ -30,6 +30,18 @@ from fileop import FilterManager, FolderItem
 #     import app.biowl.libraries.vsearch.adapter
 # except:
 #     pass
+
+def FileNotFound(function):
+    def __init__(self, *args):
+        if args:
+            self.message = args[0]
+        else:
+            self.message = None
+    def __str__(self):
+        if self.message:
+            return function + ' not found'
+        else:
+            return 'Error found'
 
 def load_module(modulename):
     '''
@@ -64,15 +76,10 @@ class LibraryBase():
 #         return services.first().value
     
     @staticmethod
-    def default(name):
-        if name == None:
-            name = 'Default Service'
-        return name
-    
-    @staticmethod
     def check_function(name, package = None):
-        return LibraryBase.default(name)
-    
+        function = name.lower()
+        return function in ["print","read","write","getfiles","getfolders","createfolder","remove","makedirs","getcwd","isfile","dirname","basename","getdatatype","len","exec","copyfile","deletefile"], package
+
     @staticmethod
     def check_functions(v):
         for f in v:
@@ -264,21 +271,12 @@ class LibraryBase():
                 result = fs.remove(arguments[0])
                 task.succeeded(DataType.File, str(result))
             else:
-                module_obj = load_module(func["module"])
-                function = getattr(module_obj, func["internal"])
-                
-                result = function(context, *arguments, **kwargs)
-                
-            #datatype = Library.GetDataTypeFromFunc(func[0].returns, result)
+                pass
             
-#                 DataProperty.add(data_alloc.id, { 'job_id': task.runnable_id}, DataType.Value)
-#                 workflow_id = Runnable.query.get(task.runnable_id).workflow_id
-#                 DataProperty.add(data_alloc.id, { 'workflow_id': workflow_id}, DataType.Value)
             return result
-        except Exception as e:
-            if task:
-                task.failed(str(e))
-            raise
+    
+        except:
+            raise FileNotFound(function)
 
     def code_func(self, context, package, function, arguments):
         '''

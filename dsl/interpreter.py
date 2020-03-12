@@ -3,11 +3,10 @@ import logging
 import threading
 import _thread
 
-from func_resolver import LibraryBase
-from externalInfo import TaskManager
-from context import Context
-
-from externalInfo import FolderItem
+from dsl.func_resolver import LibraryBase
+from dsl.util import TaskManager
+from dsl.util import FolderItem
+from dsl.context import Context
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -15,8 +14,8 @@ class Interpreter(object):
     '''
     The interpreter for PhenoWL DSL
     '''
-    def __init__(self):
-        self.context = Context()
+    def __init__(self, context):
+        self.context = context
         self.line = 0
     
     def get_args(self, expr):
@@ -37,13 +36,14 @@ class Interpreter(object):
         v = self.get_args(params)
         
         # call task if exists
-        if package is None and function in self.context.library.tasks:
-            return self.context.library.run_task(function, v, self.dotaskstmt)
+#         if package is None and function in self.context.library.tasks:
+#             return self.context.library.run_task(function, v, self.dotaskstmt)
 
         if not LibraryBase.check_function(function, package):
             raise Exception(r"Function '{0}' doesn't exist.".format(function))
             
-        return LibraryBase.call_func(self.context, package, function, v)
+        return self.context.library.call_func(self.context, package, function, v)
+        #return LibraryBase.call_func(self.context, package, function, v)
 
     def dorelexpr(self, expr):
         '''
@@ -108,9 +108,9 @@ class Interpreter(object):
         Execute a for expression.
         :param expr:
         '''
-        from wf_dsl import dsl
-        with dsl.app_context():
-            self.run_multstmt(lambda: self.eval(expr))
+#         from wfdsl import dsl
+#         with dsl.app_context():
+#             self.run_multstmt(lambda: self.eval(expr))
     
     def run_multstmt(self, f):
         self.context.append_local_symtab()

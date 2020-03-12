@@ -2,9 +2,10 @@ from sys import exit
 import sys
 
 from pyparsing import *
-
-from grammar import PythonGrammar, VizSciFlowGrammar
-from interpreter import Interpreter
+from dsl.context import Context
+from dsl.func_resolver import LibraryBase
+from dsl.grammar import PythonGrammar, VizSciFlowGrammar
+from dsl.interpreter import Interpreter
  
 class VizSciFlowParser(object):
     '''
@@ -46,24 +47,25 @@ class VizSciFlowParser(object):
             self.error(err)
         
 if __name__ == "__main__":
-    from externalInfo import Timer
+    from dsl.util import Timer
     with Timer() as t:
         p = VizSciFlowParser(PythonGrammar())
         if len(sys.argv) > 1:
             tokens = p.parse_file(sys.argv[1])
         else:
             test_program_example = 'print(2+3)'
-        test_program_example = 'print(2+3)'
+        test_program_example = 'SamtoBam(2+3)'
         tokens = p.parse(test_program_example)
         #tokens = p.grammar.assignstmt.ignore(pythonStyleComment).parseString(test_program_example)
             
         print(tokens)
         print(tokens.asXML())
-        integrator = Interpreter()
+        integrator = Interpreter(Context(LibraryBase))
        # integrator = PhenoWLCodeGenerator()
         
         #integrator.context.load_library("libraries")
         integrator.run(tokens)
+    
     print(integrator.context.library)
     print(integrator.context.out)
     print(integrator.context.err)

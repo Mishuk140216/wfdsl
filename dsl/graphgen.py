@@ -4,12 +4,11 @@ import threading
 import _thread
 import json
 
-from func_resolver import LibraryBase
-from externalInfo import TaskManager
-from context import Context
-from grammar import PythonGrammar
-from parser import VizSciFlowParser
-from provenance import BioProv
+from dsl.func_resolver import LibraryBase
+from dsl.util import TaskManager
+from dsl.grammar import PythonGrammar
+from dsl.parser import VizSciFlowParser
+#from dsl.provenance import BioProv
 
 from py2neo import Graph, Subgraph
 from py2neo.data import Node, Relationship
@@ -21,8 +20,8 @@ class GraphGenerator(object):
     '''
     The Bio-DSL graph generator
     '''
-    def __init__(self, url, username, password):
-        self.context = Context()
+    def __init__(self, context, url, username, password):
+        self.context = context
         self.line = 0
         self.graph = Graph(url, username=username, password=password)
         self.graph.schema.create_uniqueness_constraint('Workflow', 'id')
@@ -403,12 +402,12 @@ class GraphGenerator(object):
                 self.context.append_dci(local_symtab.get_var('server'), local_symtab.get_var('user'), local_symtab.get_var('password'))
                 dci_added = True
                 
-            if local_symtab.var_exists('provenance') and local_symtab.get_var('provenance'):
-                prov = BioProv(lambda: self.eval(expr[1]))
-                result = prov.run()
-                return result[0].ref if result else None
-            else:
-                return self.eval(expr[1])
+#             if local_symtab.var_exists('provenance') and local_symtab.get_var('provenance'):
+#                 prov = BioProv(lambda: self.eval(expr[1]))
+#                 result = prov.run()
+#                 return result[0].ref if result else None
+#             else:
+            return self.eval(expr[1])
             
         finally:
             if dci_added:
